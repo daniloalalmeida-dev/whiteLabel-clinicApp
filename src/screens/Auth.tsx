@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import MainScreen from './MainScreen';
 import AuthInput from '../components/AuthInput';
-import { server, showError, showSuccess } from '../common';
+import { showError, showSuccess } from '../common';
 import axios from 'axios';
 
 const backgroundImage = require('../../assets/imgs/background2.jpg');
@@ -20,6 +20,7 @@ const backgroundImage = require('../../assets/imgs/background2.jpg');
 export default class Auth extends Component {
 	state = {
 		name: '',
+		lastName: '',
 		email: '',
 		password: '',
 		confirmPassword: '',
@@ -36,12 +37,19 @@ export default class Auth extends Component {
 
 	signup = async () => {
 		try {
-			await axios.post(`${server}/users`, {
-				name: this.state.name,
-				email: this.state.email,
-				password: this.state.password,
-				confirmPassword: this.state.confirmPassword,
-			});
+			if (this.state.password.length < 8) {
+				showError('A senha precisa ter pelo menos 8 caracteres.')
+				return;
+			} else if (this.state.password !== this.state.confirmPassword) {
+				showError('Senhas não coincidem.');
+				return;
+			} else
+				await axios.post(`${process.env.API_URL}/users`, {
+					firstName: this.state.name,
+					lastName: this.state.lastName,
+					email: this.state.email,
+					password: this.state.password,
+				});
 
 			showSuccess('Usuário cadastrado.');
 			this.setState({ stageNew: false });
@@ -52,10 +60,10 @@ export default class Auth extends Component {
 
 	signin = async () => {
 		try {
-			await axios.post(`${server}/sign-in`, {
-				email: this.state.email,
-				password: this.state.password,
-			});
+			await axios.post(`${process.env.API_URL}/sign-in`, {
+						email: this.state.email,
+						password: this.state.password,
+				  });
 
 			this.props.navigation.navigate('MainScreen');
 		} catch (e) {
@@ -78,6 +86,15 @@ export default class Auth extends Component {
 							value={this.state.name}
 							style={styles.input}
 							onChangeText={(name: String) => this.setState({ name })}
+						/>
+					)}
+					{this.state.stageNew && (
+						<AuthInput
+							icon='account'
+							placeholder='Sobrenome'
+							value={this.state.lastName}
+							style={styles.input}
+							onChangeText={(lastName: String) => this.setState({ lastName })}
 						/>
 					)}
 					<AuthInput
