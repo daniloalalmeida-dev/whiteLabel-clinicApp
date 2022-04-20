@@ -2,9 +2,6 @@
 
 White label App in React Native for any medical / dentist clinc
 
-LEO NÃO ME ODEIE POR USAR CLASSES, PROMETO QUE VOU REFATORAR.
-
-
 .env example:
 API_URL=https://YOUR-API-URL.com
 
